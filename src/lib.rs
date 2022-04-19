@@ -7,6 +7,7 @@ pub struct PbInfoProblem {
 
     pub input_source: IOSource,
     pub output_source: IOSource,
+    pub grade: usize,
 
     pub time_limit: Option<String>,
     pub memory_limit: Option<String>,
@@ -39,6 +40,8 @@ pub enum PbInfoError {
     /// Error message related to the Html text that should contatin certain regex
     /// patterns.
     RegexError(String),
+    /// Errors that do not fit into any of the other categories.
+    Error(String),
 }
 type Result<T> = std::result::Result<T, PbInfoError>;
 
@@ -69,6 +72,7 @@ fn extract_id_from_json(string: &str) -> Result<usize> {
     };
 
     let id_string = padded_id.replace("#", "").replace(":", "");
+    let id_string = id_string.trim();
 
     match id_string.parse::<usize>() {
         Ok(res) => Ok(res),
@@ -91,10 +95,11 @@ fn extract_input_source(string: &str) -> Result<IOSource> {
             )))
         }
     };
+    let input_text = input_text.trim();
 
-    match input_text.as_str() {
+    match input_text {
         "tastatură" => Ok(IOSource::Std),
-        _ => Ok(IOSource::File(input_text)),
+        _ => Ok(IOSource::File(String::from(input_text))),
     }
 }
 
@@ -113,10 +118,34 @@ fn extract_output_source(string: &str) -> Result<IOSource> {
             )))
         }
     };
+    let output_text = output_text.trim();
 
-    match output_text.as_str() {
+    match output_text {
         "ecran" => Ok(IOSource::Std),
-        _ => Ok(IOSource::File(output_text)),
+        _ => Ok(IOSource::File(String::from(output_text))),
+    }
+}
+
+const const_reg: &str = r#"<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>"#;
+
+fn extract_grade(string: &str) -> Result<usize> {
+    let regex = regex::Regex::new(const_reg).unwrap();
+
+    let grade_str = match regex.captures(string) {
+        Some(res) => res[2].to_owned(),
+        None => {
+            return Err(PbInfoError::RegexError(String::from(
+                "Failed to locate the grade in the HTML",
+            )))
+        }
+    };
+    let grade_str = grade_str.trim();
+
+    match grade_str.parse::<usize>() {
+        Ok(grade) => Ok(grade),
+        _ => Err(PbInfoError::RegexError(String::from(
+            "Could not convert the grade into usize",
+        ))),
     }
 }
 
@@ -159,6 +188,7 @@ impl PbInfoProblem {
 
                 let input_source = extract_input_source(&metadata)?;
                 let output_source = extract_input_source(&metadata)?;
+                let grade = extract_grade(&metadata)?;
 
                 Ok(PbInfoProblem {
                     id,
@@ -167,6 +197,7 @@ impl PbInfoProblem {
 
                     input_source,
                     output_source,
+                    grade,
 
                     time_limit: None,
                     memory_limit: None,
@@ -305,5 +336,52 @@ mod tests {
 		<td>"#;
         assert_eq!(extract_input_source(&metadata_std), Ok(IOSource::Std));
         assert_eq!(extract_output_source(&metadata_std), Ok(IOSource::Std));
+    }
+
+    #[test]
+    fn test_extract_table() {
+        let text = r#"<table class="table table-bordered">
+	<tr>
+				<th>Postată de</th>
+		<th>Clasa</th>
+		<th>Intrare/ieșire</th>
+		<th>Limită timp</th>
+		<th>Limită memorie</th>
+		<th>Sursa problemei</th>
+		<th>Autor</th>
+		<th>Dificultate</th>
+				<th>Scorul tău</th>
+			</tr>
+	<tr>
+				<td>
+						<span class="pbi-widget-user pbi-widget-user-span">
+								<a href="/profil/silviu">
+								<img src="https://www.gravatar.com/avatar/529e246d070445d00b4c98ced6152ca7?d=wavatar&s=32" style="border-radius:3px;vertical-align: middle;" />
+				Candale Silviu (silviu)								</a>
+							</span>
+					</td>
+		<td class="center">
+			11		</td>
+		<td>
+			<span style="background: url('/img/32-fisier.png') no-repeat 3px center;background-size:16px;padding-left:34px;"> arbore1.in / arbore1.out </span> 		</td>
+		<td>
+			0.5 secunde
+		</td>
+		<td>
+			<span title="Memorie totală">64 MB</span> / <span  title="Dimensiunea stivei">64 MB</span>
+		</td>
+		<td>
+			ONI 2016, clasele XI-XII		</td>
+		<td>
+			Denis-Gabriel Mită		</td>
+		<td class="center">
+			concurs		</td>
+							<td>
+						<div class="center"><a href="/detalii-evaluare/35494272">100</a></div>
+					</td>
+						</tr>
+</table>"#;
+
+        assert_eq!(extract_grade(&text), Ok(11));
     }
 }
