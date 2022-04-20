@@ -78,7 +78,8 @@ pub fn extract_output_source(string: &str) -> Result<IOSource> {
     }
 }
 
-const const_reg: &str = r#"<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>"#;
+/// Each \s*?<td[ \S]*?>([\s\S]*?)</td> represents a <td> tag.
+const const_reg: &str = r#"<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>"#;
 
 /// Extracts the grade (from 9 to 11) of the problem.
 pub fn extract_grade(string: &str) -> Result<usize> {
@@ -145,5 +146,62 @@ pub fn extract_memory_limit(string: &str) -> Result<Option<String>> {
         ))),
         1 => Ok(Some(format!("{} / -", memory_caps[0][1].trim()))),
         _ => Ok(None),
+    }
+}
+
+/// Extracts the source of the problem (if it exists).
+pub fn extract_source(string: &str) -> Result<Option<String>> {
+    let regex = regex::Regex::new(const_reg).unwrap();
+
+    let source_str = match regex.captures(string) {
+        Some(res) => res[6].to_owned(),
+        None => {
+            return Err(PbInfoError::RegexError(
+                "Failed to locate the source in the HTML".to_owned(),
+            ))
+        }
+    };
+
+    match source_str.trim() {
+        "-" => Ok(None),
+        source => Ok(Some(source.to_owned())),
+    }
+}
+
+/// Extracts the author of the problem (if it exists).
+pub fn extract_author(string: &str) -> Result<Option<String>> {
+    let regex = regex::Regex::new(const_reg).unwrap();
+
+    let author_str = match regex.captures(string) {
+        Some(res) => res[7].to_owned(),
+        None => {
+            return Err(PbInfoError::RegexError(
+                "Failed to locate the author in the HTML".to_owned(),
+            ))
+        }
+    };
+
+    match author_str.trim() {
+        "-" => Ok(None),
+        author => Ok(Some(author.to_owned())),
+    }
+}
+
+/// Extracts the difficulty of the problem (if it exists).
+pub fn extract_difficulty(string: &str) -> Result<Option<String>> {
+    let regex = regex::Regex::new(const_reg).unwrap();
+
+    let difficulty_str = match regex.captures(string) {
+        Some(res) => res[8].to_owned(),
+        None => {
+            return Err(PbInfoError::RegexError(
+                "Failed to locate the difficulty in the HTML".to_owned(),
+            ))
+        }
+    };
+
+    match difficulty_str.trim() {
+        "-" => Ok(None),
+        difficulty => Ok(Some(difficulty.to_owned())),
     }
 }

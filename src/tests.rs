@@ -50,15 +50,15 @@ mod tests {
 
     const IO_TEXT: &str = r#"<table class="table table-bordered">
 	<tr>
-				<th>Postat∆í√â de</th>
+				<th>Postată de</th>
 		<th>Clasa</th>
-		<th>Intrare/ie¬ª√¥ire</th>
-		<th>Limit∆í√â timp</th>
-		<th>Limit∆í√â memorie</th>
+		<th>Intrare/ieșire</th>
+		<th>Limită timp</th>
+		<th>Limită memorie</th>
 		<th>Sursa problemei</th>
 		<th>Autor</th>
 		<th>Dificultate</th>
-				<th>Scorul t∆í√âu</th>
+				<th>Scorul tău</th>
 			</tr>
 	<tr>
 				<td>
@@ -76,12 +76,12 @@ mod tests {
 			0.5 secunde
 		</td>
 		<td>
-			<span title="Memorie total∆í√â">64 MB</span> / <span  title="Dimensiunea stivei">32 MB</span>
+			<span title="Memorie totală">64 MB</span> / <span  title="Dimensiunea stivei">32 MB</span>
 		</td>
 		<td>
 			ONI 2016, clasele XI-XII		</td>
 		<td>
-			Denis-Gabriel Mit∆í√â		</td>
+			Denis-Gabriel Mită		</td>
 		<td class="center">
 			concurs		</td>
 							<td>
@@ -109,5 +109,25 @@ mod tests {
             extract_memory_limit(IO_TEXT),
             Ok(Some("64 MB / 32 MB".to_owned()))
         );
+    }
+
+    #[test]
+    fn text_extract_source() {
+        assert_eq!(
+            extract_source(IO_TEXT),
+            Ok(Some("ONI 2016, clasele XI-XII".to_owned()))
+        );
+    }
+
+    #[test]
+    fn text_extract_author() {
+        assert_eq!(
+            extract_author(IO_TEXT),
+            Ok(Some("Denis-Gabriel Mită".to_owned()))
+        );
+    }
+    #[test]
+    fn text_extract_difficulty() {
+        assert_eq!(extract_difficulty(IO_TEXT), Ok(Some("concurs".to_owned())));
     }
 }

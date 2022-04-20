@@ -11,10 +11,10 @@ pub struct PbInfoProblem {
 
     pub time_limit: Option<String>,
     pub memory_limit: Option<String>,
-    pub difficulty: Option<String>,
 
-    pub author: Option<String>,
     pub source: Option<String>,
+    pub author: Option<String>,
+    pub difficulty: Option<String>,
 }
 
 /// Describes the input/output source of a PbInfoProblem.
@@ -103,9 +103,9 @@ impl PbInfoProblem {
                     time_limit: extract_time_limit(&metadata)?,
                     memory_limit: extract_memory_limit(&metadata)?,
 
-                    author: None,
-                    source: None,
-                    difficulty: None,
+                    source: extract_source(&metadata)?,
+                    author: extract_author(&metadata)?,
+                    difficulty: extract_difficulty(&metadata)?,
                 })
             }
             reqwest::StatusCode::NOT_FOUND => Err(PbInfoError::UnknownId(id)), // If the page does not exist, it means the id is wrong
