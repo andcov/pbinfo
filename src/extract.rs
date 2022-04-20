@@ -118,3 +118,29 @@ pub fn extract_time_limit(string: &str) -> Result<Option<String>> {
         time => Ok(Some(time.to_owned())),
     }
 }
+
+pub fn extract_memory_limit(string: &str) -> Result<Option<String>> {
+    let regex = regex::Regex::new(const_reg).unwrap();
+
+    let memory_str = match regex.captures(string) {
+        Some(res) => res[5].to_owned(),
+        None => {
+            return Err(PbInfoError::RegexError(
+                "Failed to locate the memory limit in the HTML".to_owned(),
+            ))
+        }
+    };
+
+    let memory_regex = regex::Regex::new(r">([\w -]*)<").unwrap();
+    let memory_caps = memory_regex.captures_iter(&memory_str).collect::<Vec<_>>();
+
+    match memory_caps.len() {
+        2 => Ok(Some(format!(
+            "{} / {}",
+            memory_caps[0][1].trim(),
+            memory_caps[1][1].trim()
+        ))),
+        1 => Ok(Some(format!("{} / -", memory_caps[0][1].trim()))),
+        _ => Ok(None),
+    }
+}

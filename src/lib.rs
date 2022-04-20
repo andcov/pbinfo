@@ -101,7 +101,7 @@ impl PbInfoProblem {
                     grade: extract_grade(&metadata)?,
 
                     time_limit: extract_time_limit(&metadata)?,
-                    memory_limit: None,
+                    memory_limit: extract_memory_limit(&metadata)?,
 
                     author: None,
                     source: None,
@@ -178,6 +178,7 @@ impl PbInfoProblem {
         ));
     }
 
+    #[allow(unused_variables)]
     pub fn get_task(&self) -> String {
         let content_regex = regex::Regex::new(r"<h1.*>Cerința</h1>[\s\S]*<p>(?P<task>[\s\S]+)</p>[\s\S]*<h1.*>Date de intrare</h1>[\s\S]*<p>(?P<input>[\s\S]+)</p>[\s\S]*<h1.*>Date de ieșire</h1>[\s\S]*<p>(?P<output>[\s\S]+)</p>[\s\S]*<h1.*>Restricții și precizări</h1>").unwrap();
 

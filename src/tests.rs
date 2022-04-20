@@ -76,7 +76,7 @@ mod tests {
 			0.5 secunde
 		</td>
 		<td>
-			<span title="Memorie total∆í√â">64 MB</span> / <span  title="Dimensiunea stivei">64 MB</span>
+			<span title="Memorie total∆í√â">64 MB</span> / <span  title="Dimensiunea stivei">32 MB</span>
 		</td>
 		<td>
 			ONI 2016, clasele XI-XII		</td>
@@ -100,6 +100,14 @@ mod tests {
         assert_eq!(
             extract_time_limit(IO_TEXT),
             Ok(Some("0.5 secunde".to_owned()))
+        );
+    }
+
+    #[test]
+    fn text_extract_memory_limit() {
+        assert_eq!(
+            extract_memory_limit(IO_TEXT),
+            Ok(Some("64 MB / 32 MB".to_owned()))
         );
     }
 }
