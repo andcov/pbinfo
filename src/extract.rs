@@ -80,6 +80,7 @@ pub fn extract_output_source(string: &str) -> Result<IOSource> {
 
 const const_reg: &str = r#"<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>\s*?<td[ \S]*?>([\s\S]*?)</td>"#;
 
+/// Extracts the grade (from 9 to 11) of the problem.
 pub fn extract_grade(string: &str) -> Result<usize> {
     let regex = regex::Regex::new(const_reg).unwrap();
 
@@ -101,6 +102,7 @@ pub fn extract_grade(string: &str) -> Result<usize> {
     }
 }
 
+/// Extracts the time limit of the problem (if it exists).
 pub fn extract_time_limit(string: &str) -> Result<Option<String>> {
     let regex = regex::Regex::new(const_reg).unwrap();
 
@@ -119,6 +121,7 @@ pub fn extract_time_limit(string: &str) -> Result<Option<String>> {
     }
 }
 
+/// Extracts the memory limit of the problem (if it exists).
 pub fn extract_memory_limit(string: &str) -> Result<Option<String>> {
     let regex = regex::Regex::new(const_reg).unwrap();
 
