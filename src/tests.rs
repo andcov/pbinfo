@@ -48,19 +48,17 @@ mod tests {
         assert_eq!(extract_output_source(&metadata_std), Ok(IOSource::Std));
     }
 
-    #[test]
-    fn test_extract_table() {
-        let text = r#"<table class="table table-bordered">
+    const IO_TEXT: &str = r#"<table class="table table-bordered">
 	<tr>
-				<th>PostatƒÉ de</th>
+				<th>Postat∆í√â de</th>
 		<th>Clasa</th>
-		<th>Intrare/ie»ôire</th>
-		<th>LimitƒÉ timp</th>
-		<th>LimitƒÉ memorie</th>
+		<th>Intrare/ie¬ª√¥ire</th>
+		<th>Limit∆í√â timp</th>
+		<th>Limit∆í√â memorie</th>
 		<th>Sursa problemei</th>
 		<th>Autor</th>
 		<th>Dificultate</th>
-				<th>Scorul tƒÉu</th>
+				<th>Scorul t∆í√âu</th>
 			</tr>
 	<tr>
 				<td>
@@ -78,12 +76,12 @@ mod tests {
 			0.5 secunde
 		</td>
 		<td>
-			<span title="Memorie totalƒÉ">64 MB</span> / <span  title="Dimensiunea stivei">64 MB</span>
+			<span title="Memorie total∆í√â">64 MB</span> / <span  title="Dimensiunea stivei">64 MB</span>
 		</td>
 		<td>
 			ONI 2016, clasele XI-XII		</td>
 		<td>
-			Denis-Gabriel MitƒÉ		</td>
+			Denis-Gabriel Mit∆í√â		</td>
 		<td class="center">
 			concurs		</td>
 							<td>
@@ -92,6 +90,16 @@ mod tests {
 						</tr>
 </table>"#;
 
-        assert_eq!(extract_grade(&text), Ok(11));
+    #[test]
+    fn test_extract_grade() {
+        assert_eq!(extract_grade(IO_TEXT), Ok(11));
+    }
+
+    #[test]
+    fn text_extract_time_limit() {
+        assert_eq!(
+            extract_time_limit(IO_TEXT),
+            Ok(Some("0.5 secunde".to_owned()))
+        );
     }
 }

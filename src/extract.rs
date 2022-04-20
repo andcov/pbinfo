@@ -100,3 +100,21 @@ pub fn extract_grade(string: &str) -> Result<usize> {
         )),
     }
 }
+
+pub fn extract_time_limit(string: &str) -> Result<Option<String>> {
+    let regex = regex::Regex::new(const_reg).unwrap();
+
+    let time_str = match regex.captures(string) {
+        Some(res) => res[4].to_owned(),
+        None => {
+            return Err(PbInfoError::RegexError(
+                "Failed to locate the time limit in the HTML".to_owned(),
+            ))
+        }
+    };
+
+    match time_str.trim() {
+        "-" => Ok(None),
+        time => Ok(Some(time.to_owned())),
+    }
+}

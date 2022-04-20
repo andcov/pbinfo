@@ -91,20 +91,16 @@ impl PbInfoProblem {
                     }
                 };
 
-                let input_source = extract_input_source(&metadata)?;
-                let output_source = extract_output_source(&metadata)?;
-                let grade = extract_grade(&metadata)?;
-
                 Ok(PbInfoProblem {
                     id,
                     name: name.to_owned(),
                     text: problem_text,
 
-                    input_source,
-                    output_source,
-                    grade,
+                    input_source: extract_input_source(&metadata)?,
+                    output_source: extract_output_source(&metadata)?,
+                    grade: extract_grade(&metadata)?,
 
-                    time_limit: None,
+                    time_limit: extract_time_limit(&metadata)?,
                     memory_limit: None,
 
                     author: None,
