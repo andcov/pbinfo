@@ -73,9 +73,9 @@ impl PbInfoProblem {
                 let problem_text = match text_regex.captures(&text) {
                     Some(res) => res[1].to_owned(),
                     None => {
-                        return Err(PbInfoError::RegexError(String::from(
-                            "Failed to locate the problem text in the HTML",
-                        )))
+                        return Err(PbInfoError::RegexError(
+                            "Failed to locate the problem text in the HTML".to_owned(),
+                        ))
                     }
                 };
 
@@ -85,19 +85,19 @@ impl PbInfoProblem {
                 let metadata = match metadata_regex.captures(&text) {
                     Some(res) => res[1].to_owned(),
                     None => {
-                        return Err(PbInfoError::RegexError(String::from(
-                            "Failed to locate the problem metadata in the HTML",
-                        )))
+                        return Err(PbInfoError::RegexError(
+                            "Failed to locate the problem metadata in the HTML".to_owned(),
+                        ))
                     }
                 };
 
                 let input_source = extract_input_source(&metadata)?;
-                let output_source = extract_input_source(&metadata)?;
+                let output_source = extract_output_source(&metadata)?;
                 let grade = extract_grade(&metadata)?;
 
                 Ok(PbInfoProblem {
                     id,
-                    name: String::from(name),
+                    name: name.to_owned(),
                     text: problem_text,
 
                     input_source,
@@ -137,9 +137,9 @@ impl PbInfoProblem {
         {
             Ok(res) => res,
             Err(_) => {
-                return Err(PbInfoError::JSONError(String::from(
-                    "Could not parse JSON response",
-                )))
+                return Err(PbInfoError::JSONError(
+                    "Could not parse JSON response".to_owned(),
+                ))
             }
         };
 
@@ -149,9 +149,9 @@ impl PbInfoProblem {
             let possible_name = match map.get("value") {
                 Some(res) => res,
                 None => {
-                    return Err(PbInfoError::JSONError(String::from(
-                        "JSON should contain the 'value' attribute",
-                    )))
+                    return Err(PbInfoError::JSONError(
+                        "JSON should contain the 'value' attribute".to_owned(),
+                    ))
                 }
             };
 
@@ -159,9 +159,9 @@ impl PbInfoProblem {
                 let label = match map.get("label") {
                     Some(res) => res,
                     None => {
-                        return Err(PbInfoError::JSONError(String::from(
-                            "JSON should contain the 'label' attribute",
-                        )))
+                        return Err(PbInfoError::JSONError(
+                            "JSON should contain the 'label' attribute".to_owned(),
+                        ))
                     }
                 };
 
@@ -177,7 +177,7 @@ impl PbInfoProblem {
         }
 
         return Err(PbInfoError::UnknownName(
-            String::from(name),
+            name.to_owned(),
             suggested_problems,
         ));
     }
