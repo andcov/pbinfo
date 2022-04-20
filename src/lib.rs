@@ -3,7 +3,8 @@
 pub struct PbInfoProblem {
     pub id: usize,
     pub name: String,
-    pub text: String,
+    pub meta_text: String,
+    pub problem_text: String,
 
     pub input_source: IOSource,
     pub output_source: IOSource,
@@ -94,7 +95,8 @@ impl PbInfoProblem {
                 Ok(PbInfoProblem {
                     id,
                     name: name.to_owned(),
-                    text: problem_text,
+                    problem_text,
+                    meta_text: metadata.clone(),
 
                     input_source: extract_input_source(&metadata)?,
                     output_source: extract_output_source(&metadata)?,
@@ -182,7 +184,7 @@ impl PbInfoProblem {
     pub fn get_task(&self) -> String {
         let content_regex = regex::Regex::new(r"<h1.*>Cerința</h1>[\s\S]*<p>(?P<task>[\s\S]+)</p>[\s\S]*<h1.*>Date de intrare</h1>[\s\S]*<p>(?P<input>[\s\S]+)</p>[\s\S]*<h1.*>Date de ieșire</h1>[\s\S]*<p>(?P<output>[\s\S]+)</p>[\s\S]*<h1.*>Restricții și precizări</h1>").unwrap();
 
-        let caps = content_regex.captures(&self.text).unwrap();
+        let caps = content_regex.captures(&self.problem_text).unwrap();
         let task = &caps["task"];
         let input = &caps["input"];
         let output = &caps["output"];
