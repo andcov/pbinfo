@@ -117,7 +117,7 @@ pub fn extract_time_limit(string: &str) -> Result<Option<String>> {
     };
 
     match time_str.trim() {
-        "-" => Ok(None),
+        "-" | r#"<div class="center">-</div>"# => Ok(None),
         time => Ok(Some(time.to_owned())),
     }
 }
@@ -163,7 +163,7 @@ pub fn extract_source(string: &str) -> Result<Option<String>> {
     };
 
     match source_str.trim() {
-        "-" => Ok(None),
+        "-" | r#"<div class="center">-</div>"# => Ok(None),
         source => Ok(Some(source.to_owned())),
     }
 }
@@ -182,7 +182,7 @@ pub fn extract_author(string: &str) -> Result<Option<String>> {
     };
 
     match author_str.trim() {
-        "-" => Ok(None),
+        "-" | r#"<div class="center">-</div>"# => Ok(None),
         author => Ok(Some(author.to_owned())),
     }
 }
@@ -201,7 +201,7 @@ pub fn extract_difficulty(string: &str) -> Result<Option<String>> {
     };
 
     match difficulty_str.trim() {
-        "-" => Ok(None),
+        "-" | r#"<div class="center">-</div>"# => Ok(None),
         difficulty => Ok(Some(difficulty.to_owned())),
     }
 }
