@@ -179,12 +179,10 @@ mod tests {
         );
         assert_eq!(extract_author(IO_TEXT_2), Ok(None));
     }
+
     #[test]
     fn text_extract_difficulty() {
-        assert_eq!(
-            extract_difficulty(IO_TEXT_1),
-            Ok(Some("concurs".to_owned()))
-        );
-        assert_eq!(extract_difficulty(IO_TEXT_2), Ok(Some("ușoară".to_owned())));
+        assert_eq!(extract_difficulty(IO_TEXT_1), Ok(Some(Difficulty::Contest)));
+        assert_eq!(extract_difficulty(IO_TEXT_2), Ok(Some(Difficulty::Easy)));
     }
 }

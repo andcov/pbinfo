@@ -1,21 +1,33 @@
 /// A problem from  PbInfo. Can be constructed using an id or a name.
 #[derive(Debug)]
 pub struct PbInfoProblem {
+    /// Unique id of problem
     pub id: usize,
+    /// Unique name of problem
     pub name: String,
+    /// Html containing input source, output source etc.
     pub meta_text: String,
+    /// Html containing task, examples etc.
     pub problem_text: String,
 
+    /// File name of stdin
     pub input_source: IOSource,
+    /// File name of stdout
     pub output_source: IOSource,
+    /// 9th, 10th or 11th grade
     pub grade: usize,
 
+    /// Time limit (if it exists)
     pub time_limit: Option<String>,
+    /// Memory limit (if it exists)
     pub memory_limit: Option<String>,
 
+    /// Source (usually not specified, sometimes a contest name)
     pub source: Option<String>,
+    /// Author (usually not specified)
     pub author: Option<String>,
-    pub difficulty: Option<String>,
+    /// Difficulty (if it exists)
+    pub difficulty: Option<Difficulty>,
 }
 
 /// Describes the input/output source of a PbInfoProblem.
@@ -25,6 +37,19 @@ pub enum IOSource {
     File(String),
     /// The source is stdin/stdout.
     Std,
+}
+
+/// Difficulty of PbInfoProblem
+#[derive(Debug, PartialEq, Eq)]
+pub enum Difficulty {
+    /// Easy (Ușor)
+    Easy,
+    /// Medium (Mediu)
+    Medium,
+    /// Difficult (Dificil)
+    Difficult,
+    /// Contest (Concurs)
+    Contest,
 }
 
 /// Errors that may be encuntered when constructing a PbInfoProblem.
@@ -178,16 +203,5 @@ impl PbInfoProblem {
             name.to_owned(),
             suggested_problems,
         ));
-    }
-
-    #[allow(unused_variables)]
-    pub fn get_task(&self) -> String {
-        let content_regex = regex::Regex::new(r"<h1.*>Cerința</h1>[\s\S]*<p>(?P<task>[\s\S]+)</p>[\s\S]*<h1.*>Date de intrare</h1>[\s\S]*<p>(?P<input>[\s\S]+)</p>[\s\S]*<h1.*>Date de ieșire</h1>[\s\S]*<p>(?P<output>[\s\S]+)</p>[\s\S]*<h1.*>Restricții și precizări</h1>").unwrap();
-
-        let caps = content_regex.captures(&self.problem_text).unwrap();
-        let task = &caps["task"];
-        let input = &caps["input"];
-        let output = &caps["output"];
-        String::new()
     }
 }

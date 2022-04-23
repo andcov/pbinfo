@@ -188,7 +188,7 @@ pub fn extract_author(string: &str) -> Result<Option<String>> {
 }
 
 /// Extracts the difficulty of the problem (if it exists).
-pub fn extract_difficulty(string: &str) -> Result<Option<String>> {
+pub fn extract_difficulty(string: &str) -> Result<Option<Difficulty>> {
     let regex = regex::Regex::new(const_reg).unwrap();
 
     let difficulty_str = match regex.captures(string) {
@@ -200,8 +200,22 @@ pub fn extract_difficulty(string: &str) -> Result<Option<String>> {
         }
     };
 
-    match difficulty_str.trim() {
-        "-" | r#"<div class="center">-</div>"# => Ok(None),
-        difficulty => Ok(Some(difficulty.to_owned())),
+    match difficulty_str.trim().to_lowercase().as_str() {
+        "ușor" | "ușoară" => Ok(Some(Difficulty::Easy)),
+        "mediu" | "medie" => Ok(Some(Difficulty::Medium)),
+        "dificil" | "dificilă" => Ok(Some(Difficulty::Difficult)),
+        "concurs" => Ok(Some(Difficulty::Contest)),
+        _ => Ok(None),
     }
+}
+
+#[allow(unused_variables)]
+pub fn get_task(problem_text: &str) -> String {
+    let content_regex = regex::Regex::new(r"<h1.*>Cerința</h1>[\s\S]*<p>(?P<task>[\s\S]+)</p>[\s\S]*<h1.*>Date de intrare</h1>[\s\S]*<p>(?P<input>[\s\S]+)</p>[\s\S]*<h1.*>Date de ieșire</h1>[\s\S]*<p>(?P<output>[\s\S]+)</p>[\s\S]*<h1.*>Restricții și precizări</h1>").unwrap();
+
+    let caps = content_regex.captures(problem_text).unwrap();
+    let task = &caps["task"];
+    let input = &caps["input"];
+    let output = &caps["output"];
+    String::new()
 }
